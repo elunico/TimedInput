@@ -5,7 +5,10 @@ from select import select
 import threading
 
 
-_initialized = False
+_timed_input_0_3_0_initialized = False
+
+
+__all__ = [timed_input, _timed_input_0_3_0_initialized]
 
 
 def timed_input(seconds, prompt='', default=None):
@@ -73,15 +76,15 @@ def _windows_timed_input(seconds, prompt='', default=None):
     not available
     """
 
-    global _initialized
-    if not _initialized:
+    global _timed_input_0_3_0_initialized
+    if not _timed_input_0_3_0_initialized:
 
         def term_handler(s, f):
             raise _InputTimeoutError()
 
         signal.signal(signal.SIGTERM, term_handler)
 
-        _initialized = True
+        _timed_input_0_3_0_initialized = True
 
     try:
         print('WARNING: Input times out after {} seconds'.format(seconds))
