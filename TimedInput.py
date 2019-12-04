@@ -8,9 +8,6 @@ import threading
 _timed_input_0_3_0_initialized = False
 
 
-__all__ = [timed_input, _timed_input_0_3_0_initialized]
-
-
 def timed_input(seconds, prompt='', default=None):
     """
     This function takes a number of seconds, an optional prompt, and
