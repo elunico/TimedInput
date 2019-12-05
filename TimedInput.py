@@ -2,14 +2,22 @@ import os
 import signal
 import sys
 from select import select
-import threading
+from threading import Timer
 
 
-_timed_input_0_3_0_initialized = False
+def isWindows():
+    return 'win' in sys.platform
+
+
+if isWindows():
+    def term_handler(s, f):
+        raise _InputTimeoutError()
+
+    signal.signal(signal.SIGTERM, term_handler)
 
 
 def timed_input(seconds, prompt='', default=None):
-    """
+    """\
     This function takes a number of seconds, an optional prompt, and
     an optional default and then prints the prompt and waits
     for the user to give keyboard input for `seconds` seconds.
@@ -28,7 +36,7 @@ def timed_input(seconds, prompt='', default=None):
     On other platforms, select() is used and no signal handlers are
     specially installed
     """
-    if 'win' in sys.platform:
+    if isWindows():
         return _windows_timed_input(seconds, prompt, default)
     else:
         return _unix_timed_input(seconds, prompt, default)
@@ -44,13 +52,13 @@ def _startThread(seconds):
     def thread_target():
         os.kill(pid, signal.SIGTERM)
 
-    t = threading.Timer(seconds, thread_target)
+    t = Timer(seconds, thread_target)
     t.start()
     return t
 
 
 def _windows_timed_input(seconds, prompt='', default=None):
-    """
+    """\
     This function should not be called directly,
     it is a platform dependant implementation
 
@@ -73,16 +81,6 @@ def _windows_timed_input(seconds, prompt='', default=None):
     not available
     """
 
-    global _timed_input_0_3_0_initialized
-    if not _timed_input_0_3_0_initialized:
-
-        def term_handler(s, f):
-            raise _InputTimeoutError()
-
-        signal.signal(signal.SIGTERM, term_handler)
-
-        _timed_input_0_3_0_initialized = True
-
     try:
         print('WARNING: Input times out after {} seconds'.format(seconds))
         timer = _startThread(seconds)
@@ -96,7 +94,7 @@ def _windows_timed_input(seconds, prompt='', default=None):
 
 
 def _unix_timed_input(seconds, prompt='', default=None):
-    """
+    """\
     This function should not be called directly,
     it is a platform dependant implementation
 
