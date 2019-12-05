@@ -17,7 +17,7 @@ if isWindows():
 
 
 def timed_input(seconds, prompt='', default=None):
-    """
+    """\
     This function takes a number of seconds, an optional prompt, and
     an optional default and then prints the prompt and waits
     for the user to give keyboard input for `seconds` seconds.
@@ -58,7 +58,7 @@ def _startThread(seconds):
 
 
 def _windows_timed_input(seconds, prompt='', default=None):
-    """
+    """\
     This function should not be called directly,
     it is a platform dependant implementation
 
@@ -94,7 +94,7 @@ def _windows_timed_input(seconds, prompt='', default=None):
 
 
 def _unix_timed_input(seconds, prompt='', default=None):
-    """
+    """\
     This function should not be called directly,
     it is a platform dependant implementation
 
