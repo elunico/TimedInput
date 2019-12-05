@@ -2,7 +2,7 @@ import os
 import signal
 import sys
 from select import select
-import threading
+from threading import Timer
 
 
 def isWindows():
@@ -52,7 +52,7 @@ def _startThread(seconds):
     def thread_target():
         os.kill(pid, signal.SIGTERM)
 
-    t = threading.Timer(seconds, thread_target)
+    t = Timer(seconds, thread_target)
     t.start()
     return t
 
