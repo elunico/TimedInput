@@ -3,20 +3,21 @@ import signal
 import sys
 from select import select
 from threading import Timer
+from typing import Callable, TypeVar, Optional
 
 
-def isWindows():
+def _is_windows() -> bool:
     return 'win' in sys.platform
 
 
-if isWindows():
-    def term_handler(s, f):
+if _is_windows():
+    def _term_handler(s, f):
         raise _InputTimeoutError()
 
-    signal.signal(signal.SIGTERM, term_handler)
+    signal.signal(signal.SIGTERM, _term_handler)
 
 
-def timed_input(seconds, prompt='', default=None):
+def timed_input(seconds: int, prompt: str = '', default: Optional[str] = None) -> Optional[str]:
     """\
     This function takes a number of seconds, an optional prompt, and
     an optional default and then prints the prompt and waits
@@ -36,7 +37,7 @@ def timed_input(seconds, prompt='', default=None):
     On other platforms, select() is used and no signal handlers are
     specially installed
     """
-    if isWindows():
+    if _is_windows():
         return _windows_timed_input(seconds, prompt, default)
     else:
         return _unix_timed_input(seconds, prompt, default)
@@ -46,7 +47,7 @@ class _InputTimeoutError(Exception):
     pass
 
 
-def _startThread(seconds):
+def _startThread(seconds: int) -> Timer:
     pid = os.getpid()
 
     def thread_target():
@@ -57,7 +58,17 @@ def _startThread(seconds):
     return t
 
 
-def _windows_timed_input(seconds, prompt='', default=None):
+R = TypeVar('R')
+
+
+def _silent(func: Callable[[], R]) -> Optional[R]:
+    try:
+        return func()
+    except Exception:
+        return None
+
+
+def _windows_timed_input(seconds: int, prompt: str = '', default: Optional[str] = None) -> Optional[str]:
     """\
     This function should not be called directly,
     it is a platform dependant implementation
@@ -93,7 +104,7 @@ def _windows_timed_input(seconds, prompt='', default=None):
         timer.cancel()
 
 
-def _unix_timed_input(seconds, prompt='', default=None):
+def _unix_timed_input(seconds: int, prompt: str = '', default: Optional[str] = None) -> Optional[str]:
     """\
     This function should not be called directly,
     it is a platform dependant implementation
